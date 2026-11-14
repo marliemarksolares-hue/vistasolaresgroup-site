@@ -1,5 +1,5 @@
 /* Site settings. After deploying ContactForm.gs as a web app, paste its URL between the quotes below. */
-window.VSG_FORM_URL = '';
+window.VSG_FORM_URL = 'https://script.google.com/macros/s/AKfycbw5gQNKak19nvs0ycre35Yj3T40l5BeSMFO9r4B4ecwaxEBi0SZYTeryL8_nTfMmeTV/exec';
 
 /* Called when the contact form passes validation. Returns the confirmation text to show. */
 window.vsgSubmit = function (s) {
