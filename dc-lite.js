@@ -156,6 +156,13 @@
       };
       render();
       document.documentElement.classList.add('dc-ready');
+      function toHash() {
+        var h = location.hash && location.hash.slice(1);
+        var el = h && document.getElementById(h);
+        if (el) el.scrollIntoView();
+      }
+      setTimeout(toHash, 60);
+      window.addEventListener('hashchange', toHash);
     }
   };
 })();
