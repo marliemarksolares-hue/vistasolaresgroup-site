@@ -95,6 +95,7 @@
     for (i = a.attributes.length - 1; i >= 0; i--) {
       at = a.attributes[i].name;
       if (!b.hasAttribute(at)) {
+        if (at.indexOf('data-m-') === 0) continue;
         if (at === 'open' && a.nodeName === 'DETAILS' && sumText(a) === sumText(b)) continue;
         a.removeAttribute(at);
       }
@@ -152,7 +153,14 @@
       inst.__schedule = function () {
         if (pending) return;
         pending = true;
-        Promise.resolve().then(render);
+        var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (window.__dcVT && document.startViewTransition && !reduce) {
+          window.__dcVT = 0;
+          document.startViewTransition(render);
+        } else {
+          window.__dcVT = 0;
+          Promise.resolve().then(render);
+        }
       };
       render();
       document.documentElement.classList.add('dc-ready');
@@ -162,6 +170,16 @@
         if (el) el.scrollIntoView();
       }
       setTimeout(toHash, 60);
+      // highlighter sweep: mark .hl spans as they enter the viewport
+      if ('IntersectionObserver' in window) {
+        document.documentElement.classList.add('m-on');
+        var io = new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            if (e.isIntersecting) { e.target.setAttribute('data-m-in', ''); io.unobserve(e.target); }
+          });
+        }, { rootMargin: '0px 0px -18% 0px' });
+        [].forEach.call(document.querySelectorAll('.hl'), function (el) { io.observe(el); });
+      }
       window.addEventListener('hashchange', toHash);
     }
   };
