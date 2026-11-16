@@ -149,6 +149,32 @@
         var frag = document.createElement('div');
         buildKids(tpl, scope, frag);
         morph(root, frag);
+        after();
+      }
+      var io = null;
+      var reduceM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function num(t) { var m = String(t).replace(/,/g, '').match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : null; }
+      var lastV = [];
+      function tween(el, i) {
+        var txt = el.textContent, to = num(txt), from = el.__tv != null ? el.__tv : (lastV[i] != null ? lastV[i] : 0);
+        el.__tv = to; el.__final = txt; lastV[i] = to;
+        if (reduceM || to == null || from === to || txt.indexOf('PHP') !== 0) return;
+        var t0 = performance.now(), id = (el.__tid = (el.__tid || 0) + 1);
+        (function step(now) {
+          if (el.__tid !== id || !el.firstChild) return;
+          var k = Math.max(0, Math.min(1, (now - t0) / 450)), e = 1 - Math.pow(1 - k, 4);
+          el.firstChild.nodeValue = k < 1
+            ? 'PHP ' + (from + (to - from) * e).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+            : el.__final;
+          if (k < 1) requestAnimationFrame(step);
+        })(t0);
+      }
+      function after() {
+        if (io) [].forEach.call(root.querySelectorAll('.hl:not([data-m-in]),.ph:not([data-m-in]),.sr:not([data-m-in])'), function (el) {
+          if (el.className === 'ph' && el.parentElement) { el.parentElement.__ph = el; io.observe(el.parentElement); }
+          else io.observe(el);
+        });
+        [].forEach.call(root.querySelectorAll('[data-tween]'), tween);
       }
       inst.__schedule = function () {
         if (pending) return;
@@ -170,15 +196,17 @@
         if (el) el.scrollIntoView();
       }
       setTimeout(toHash, 60);
-      // highlighter sweep: mark .hl spans as they enter the viewport
+      // in-view marks: highlighter sweep, photo reveal, list stagger
       if ('IntersectionObserver' in window) {
         document.documentElement.classList.add('m-on');
-        var io = new IntersectionObserver(function (es) {
+        io = new IntersectionObserver(function (es) {
           es.forEach(function (e) {
-            if (e.isIntersecting) { e.target.setAttribute('data-m-in', ''); io.unobserve(e.target); }
+            if (!e.isIntersecting) return;
+            io.unobserve(e.target);
+            if (e.target.__ph) e.target.__ph.setAttribute('data-m-in', ''); else e.target.setAttribute('data-m-in', '');
           });
-        }, { rootMargin: '0px 0px -18% 0px' });
-        [].forEach.call(document.querySelectorAll('.hl'), function (el) { io.observe(el); });
+        }, { rootMargin: '0px 0px -12% 0px' });
+        after();
       }
       window.addEventListener('hashchange', toHash);
     }

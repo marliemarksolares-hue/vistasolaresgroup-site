@@ -84,6 +84,14 @@ header a.lnk:not([aria-current]):hover{background:#E9EEF0;text-decoration:none}
 .hl{transition:background-size .8s cubic-bezier(.16,1,.3,1) .15s}
 .m-on .hl:not([data-m-in]){background-size:0 100%!important}
 @keyframes vsg-seam{from{--seam:6.2}}
+@keyframes vsg-title{from{opacity:0;transform:translateY(.2em);clip-path:inset(0 0 45% 0)}}
+.dc-ready main>section:first-child:not(.hero) h1{animation:vsg-title .75s cubic-bezier(.16,1,.3,1) both}
+.dc-ready main>section:first-child:not(.hero) h1+p{animation:vsg-rise .6s cubic-bezier(.16,1,.3,1) .25s both}
+img.ph{transition:clip-path .95s cubic-bezier(.16,1,.3,1)}
+.m-on img.ph:not([data-m-in]){clip-path:inset(98% 0 0 0)}
+.m-on img.ph[data-m-in]{clip-path:inset(0)}
+.sr{transition:opacity .5s ease calc(var(--i)*45ms),transform .6s cubic-bezier(.16,1,.3,1) calc(var(--i)*45ms)}
+.m-on .sr:not([data-m-in]){opacity:0;transform:translateY(14px)}
 @keyframes vsg-rise{from{opacity:0;transform:translateY(14px)}}
 @keyframes vsg-panel{from{opacity:0;transform:translateY(-6px) scale(.98)}}
 .hero{overflow:clip}
@@ -103,6 +111,8 @@ details:not(.mnav)[open]>summary svg{transform:rotate(180deg)}
  a.btn svg,a.lnk svg,a.row svg,details>summary svg{transition:none}
  a.btn:hover svg,a.lnk:hover svg,a.row:hover svg{transform:none}
  a.btn:active,button:active,[role=tab]:active{transform:none}
+ .dc-ready main>section:first-child:not(.hero) h1,.dc-ready main>section:first-child:not(.hero) h1+p{animation:none}
+ img.ph,.sr{transition:none}.m-on img.ph:not([data-m-in]){clip-path:none}.m-on .sr:not([data-m-in]){opacity:1;transform:none}
  .hl{transition:none}.m-on .hl:not([data-m-in]){background-size:100% 100%!important}
  details:not(.mnav)::details-content{transition:none}
  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}
