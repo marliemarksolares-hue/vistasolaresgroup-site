@@ -200,12 +200,19 @@
       if ('IntersectionObserver' in window) {
         document.documentElement.classList.add('m-on');
         io = new IntersectionObserver(function (es) {
+          var k = 0;
           es.forEach(function (e) {
             if (!e.isIntersecting) return;
             io.unobserve(e.target);
-            if (e.target.__ph) e.target.__ph.setAttribute('data-m-in', ''); else e.target.setAttribute('data-m-in', '');
+            var img = e.target.__ph;
+            if (!img) { e.target.setAttribute('data-m-in', ''); return; }
+            // photos: wait until the picture has loaded, then fade in, left to right within a row
+            var d = Math.min(k++, 4) * 90;
+            var show = function () { img.style.transitionDelay = d + 'ms'; img.setAttribute('data-m-in', ''); };
+            if (img.complete && img.naturalWidth) show();
+            else { img.addEventListener('load', show, { once: true }); img.addEventListener('error', show, { once: true }); }
           });
-        }, { rootMargin: '0px 0px -12% 0px' });
+        }, { rootMargin: '0px 0px -6% 0px' });
         after();
       }
       window.addEventListener('hashchange', toHash);
